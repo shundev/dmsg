@@ -28,9 +28,12 @@
     "react-redux": "^5.0.7",
     "redux": "^4.0.0",
     "redux-saga": "^0.16.0",
+    "truffle": "^4.1.11",
+    "truffle-hdwallet-provider": "0.0.5",
     "web3": "^1.0.0-beta.34"
   },
   "devDependencies": {
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "core-js": "^2.5.7",
     "parcel-bundler": "^1.8.1",
     "stylus": "^0.54.5"

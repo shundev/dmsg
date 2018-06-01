@@ -2,7 +2,6 @@ import getWeb3 from '../helpers/getWeb3'
 import { takeEvery, takeLatest, take, select, fork, call, put, all } from 'redux-saga/effects'
 
 import * as actionTypes from '../constants/actionTypes'
-import { dmsgContract } from '../contracts'
 import store from '../store'
 
 function* watchAndLog() {
@@ -10,6 +9,7 @@ function* watchAndLog() {
     const action = yield take('*')
     const state = yield select()
     console.log('action', action)
+    console.log('state', state)
   }
 }
 
@@ -53,61 +53,19 @@ function* sendMessageAsync (action)
     yield sendMessage(contractInstance, userAddress, friendAddress, action.payload)
 }
 
-function* fetchWeb3ConnectionAsync() {
-    yield take(actionTypes.FETCH_WEB3_CONNECTION_REQUESTED)
-    const { web3 } = yield getWeb3
-    const accounts = yield getAccounts
-    const instance = web3.eth.contract(dmsgContract.abi).at(dmsgContract.address)
-
-    instance.MessageSent({recipient: accounts[0]})
-    .watch((err, result) => {
-        store.dispatch({ type: actionTypes.FETCH_HISTORY_REQUESTED})
-    })
-
-    instance.MessageSent({sender: accounts[0]})
-    .watch((err, result) => {
-        store.dispatch({ type: actionTypes.FETCH_HISTORY_REQUESTED})
-    })
-
-    yield put({
-        type: actionTypes.FETCH_WEB3_CONNECTION_SUCCESS,
-        web3: web3,
-        userAddress: accounts[0],
-        contractInstance: instance
-    })
-
-    yield put({ type: actionTypes.FETCH_HISTORY_REQUESTED })
-}
-
-const getAccounts = new Promise(function(resolve, reject) {
-    web3.eth.getAccounts((err, result) => resolve(result))
-})
-
 const getMessage = (dmsgContractInstance, messageId, userAddress) => {
-    return new Promise(function(resolve, rejest) {
-        dmsgContractInstance.getMessage(messageId, {from: userAddress}, (err, message) => {
-            resolve(message)
-        })
-    })
+    // return dmsgContractInstance.methods.getMessage(messageId).call({from: userAddress})
+    return null
 }
 
 const getMessages = (dmsgContractInstance, userAddress, friendAddress) => {
-    return new Promise(function(resolve, reject) {
-        dmsgContractInstance.getMessages(friendAddress, {from: userAddress}, (err, messageIds) => {
-            resolve(messageIds)
-        })
-    })
+    // return dmsgContractInstance.methods.getMessages(friendAddress).call({from: userAddress})
+    return null
 }
 
 const sendMessage = (dmsgContractInstance, userAddress, friendAddress, message) => {
-    return new Promise(function(resolve, reject) {
-        dmsgContractInstance.sendMessage.sendTransaction(
-            friendAddress,
-            message,
-            {from: userAddress},
-            (err, result) => { resolve(result) }
-        )
-    })
+    // return dmsgContractInstance.methods.sendMessage(friendAddress, message).send({from: userAddress})
+    return null
 }
 
 const messageComparer = (m1, m2) => {
@@ -124,6 +82,5 @@ export default function* rootSaga ()
 {
     yield takeLatest(actionTypes.FETCH_HISTORY_REQUESTED, fetchHistoryAsync)
     yield takeEvery(actionTypes.SEND_MESSAGE_REQUESTED, sendMessageAsync)
-    yield fork(fetchWeb3ConnectionAsync)
     yield fork(watchAndLog)
 }

@@ -1,17 +1,7 @@
-import { combineReducers } from 'redux'
-import { fromJS } from 'immutable'
-
 import * as actionTypes from '../constants/actionTypes';
+import { INITIAL_STATE } from '../store'
 
-const INITIAL_STATE = {
-    userAddress: "0x0",
-    friendAddress: "0x0",
-    history: [],
-    web3: null,
-    contractInstance: null,
-}
-
-export default function dmsgReducer(state = INITIAL_STATE, action = {})
+function reducer(state = INITIAL_STATE, action = {})
 {
     switch (action.type)
     {
@@ -41,3 +31,5 @@ export default function dmsgReducer(state = INITIAL_STATE, action = {})
             return state
     }
 }
+
+export default reducer

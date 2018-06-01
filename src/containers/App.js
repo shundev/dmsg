@@ -2,6 +2,7 @@ import 'babel-polyfill'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { createStore } from 'redux'
+import { drizzleConnect } from 'drizzle-react'
 
 import { store } from '../store'
 import ChatInput from '../components/ChatInput'
@@ -11,7 +12,6 @@ import * as actionTypes from '../constants/actionTypes'
 
 class App extends Component {
   componentWillMount() {
-      store.dispatch({ type: actionTypes.FETCH_WEB3_CONNECTION_REQUESTED })
   }
 
   componentDidUpdate() {
@@ -20,6 +20,7 @@ class App extends Component {
 
   render() {
     const { userAddress, friendAddress, history, fetchHistory, changeFriend, sendMessage } = this.props
+    console.log(this.props)
     return (
       <div className="App">
         <ChangeFriend friendAddress={ friendAddress } changeFriend={ changeFriend } />
@@ -32,7 +33,6 @@ class App extends Component {
   scrollDown() {
       window.scrollTo(0, document.body.scrollHeight);
   }
-
 }
 
 function mapDispatchToProps (dispatch, ownProps) {
@@ -46,7 +46,18 @@ function mapDispatchToProps (dispatch, ownProps) {
     }
 }
 
-export default connect(
-    state => state,
+function selector (state, ownProps) {
+    return {
+        history: [],
+        userAddress: "0x0",
+        friendAddress: "0x0",
+        ...state
+    }
+}
+
+const Connected = connect(
+    selector,
     mapDispatchToProps
 )(App);
+
+export default drizzleConnect(Connected, state => state)
