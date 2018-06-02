@@ -5,14 +5,12 @@ import { Provider } from 'react-redux'
 import { DrizzleProvider } from 'drizzle-react'
 
 import drizzleOptions from './drizzleOptions'
-import { store, sagaMiddleware } from './store'
+import { store } from './store'
 import App from './containers/App';
 
 ReactDOM.render(
-  <DrizzleProvider options={ drizzleOptions } >
-      <Provider store={ store }>
-          <App />
-      </Provider>
+  <DrizzleProvider options={ drizzleOptions } store={ store }>
+      <App />
   </DrizzleProvider>,
   document.getElementById('root')
 );

@@ -48,16 +48,14 @@ function mapDispatchToProps (dispatch, ownProps) {
 
 function selector (state, ownProps) {
     return {
-        history: [],
-        userAddress: "0x0",
-        friendAddress: "0x0",
-        ...state
+        history: state.dmsg.history,
+        userAddress: state.dmsg.userAddress,
+        friendAddress: state.dmsg.friendAddress,
     }
 }
 
-const Connected = connect(
+export default drizzleConnect(
+    App,
     selector,
     mapDispatchToProps
-)(App);
-
-export default drizzleConnect(Connected, state => state)
+)

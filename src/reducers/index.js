@@ -1,7 +1,24 @@
-import * as actionTypes from '../constants/actionTypes';
-import { INITIAL_STATE } from '../store'
+import { combineReducers } from 'redux'
+import { drizzleReducers, generateContractsInitialState } from 'drizzle'
 
-function reducer(state = INITIAL_STATE, action = {})
+import * as actionTypes from '../constants/actionTypes';
+import drizzleOptions from '../drizzleOptions'
+
+export const INITIAL_STATE = {
+    dmsg: {
+        userAddress: "0x0",
+        friendAddress: "0x0",
+        history: [],
+    },
+    contracts: generateContractsInitialState(drizzleOptions)
+}
+
+const reducer = combineReducers({
+  dmsg: dmsgReducer,
+  ...drizzleReducers
+})
+
+function dmsgReducer(state = INITIAL_STATE, action = {})
 {
     switch (action.type)
     {

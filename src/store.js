@@ -1,18 +1,14 @@
 import createSagaMiddleware from 'redux-saga'
 import { createStore, applyMiddleware } from 'redux'
+import { generateContractsInitialState } from 'drizzle'
 
-import reducer from './reducers'
+import reducer, { INITIAL_STATE } from './reducers'
 import rootSage from './sagas'
-
-export const INITIAL_STATE = {
-    userAddress: "0x0",
-    friendAddress: "0x0",
-    history: [],
-}
 
 const sagaMiddleware = createSagaMiddleware();
 export const store = createStore(
   reducer,
+  INITIAL_STATE,
   applyMiddleware(sagaMiddleware)
 );
 
