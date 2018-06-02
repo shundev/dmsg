@@ -1,4 +1,5 @@
 import { takeEvery, takeLatest, take, select, fork, call, put, all } from 'redux-saga/effects'
+import { drizzleSagas } from 'drizzle'
 
 import * as actionTypes from '../constants/actionTypes'
 import store from '../store'
@@ -7,19 +8,25 @@ function* watchAndLog() {
   while (true) {
     const action = yield take('*')
     const state = yield select()
-    console.log('action', action)
-    console.log('state', state)
+    // console.log('state', state)
   }
 }
 
 function* fetchHistoryAsync (action)
 {
-    const { contractInstance, userAddress, friendAddress } = yield select()
-    const messageIds = yield getMessages(contractInstance, userAddress, friendAddress)
+    const state = yield select()
+    console.log(state)
+    const { contracts, accounts, dmsg } = state
+    if (typeof accounts === 'undefined' || accounts.length === 0) {
+        console.log("Invalid accounts[0]")
+        return
+    }
+
+    const messageIds = yield getMessages(contracts.Dmsg, accounts[0], dmsg.friendAddress)
     const getMessageWorkers = []
     for (var i=0; i<messageIds.length; i++) {
         if (messageIds[i] == 0) break;
-        getMessageWorkers.push(call(getMessage, contractInstance, messageIds[i], userAddress))
+        getMessageWorkers.push(call(getMessage, contracts.Dmsg, messageIds[i], accounts[0]))
     }
 
     const messages = yield all(getMessageWorkers)
@@ -53,13 +60,13 @@ function* sendMessageAsync (action)
 }
 
 const getMessage = (dmsgContractInstance, messageId, userAddress) => {
-    // return dmsgContractInstance.methods.getMessage(messageId).call({from: userAddress})
-    return null
+    return dmsgContractInstance.methods.getMessage.cacheCall(messageId, {from: userAddress})
 }
 
 const getMessages = (dmsgContractInstance, userAddress, friendAddress) => {
-    // return dmsgContractInstance.methods.getMessages(friendAddress).call({from: userAddress})
-    return null
+    console.log(dmsgContractInstance)
+    console.log(dmsgContractInstance.getMessages)
+    return dmsgContractInstance.getMessages.cacheCall(friendAddress, {from: userAddress})
 }
 
 const sendMessage = (dmsgContractInstance, userAddress, friendAddress, message) => {
@@ -77,9 +84,16 @@ const messageComparer = (m1, m2) => {
     }
 }
 
+function* drizzleRoot() {
+  yield all(
+    drizzleSagas.map(saga => fork(saga))
+  )
+}
+
 export default function* rootSaga ()
 {
     yield takeLatest(actionTypes.FETCH_HISTORY_REQUESTED, fetchHistoryAsync)
     yield takeEvery(actionTypes.SEND_MESSAGE_REQUESTED, sendMessageAsync)
     yield fork(watchAndLog)
+    yield fork(drizzleRoot)
 }

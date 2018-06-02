@@ -20,7 +20,6 @@ class App extends Component {
 
   render() {
     const { userAddress, friendAddress, history, fetchHistory, changeFriend, sendMessage } = this.props
-    console.log(this.props)
     return (
       <div className="App">
         <ChangeFriend friendAddress={ friendAddress } changeFriend={ changeFriend } />
@@ -48,9 +47,9 @@ function mapDispatchToProps (dispatch, ownProps) {
 
 function selector (state, ownProps) {
     return {
-        history: state.dmsg.history,
-        userAddress: state.dmsg.userAddress,
+        userAddress: state.accounts ? state.accounts[0] : "0x0",
         friendAddress: state.dmsg.friendAddress,
+        history: state.dmsg.history,
     }
 }
 
