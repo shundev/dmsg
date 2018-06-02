@@ -1,8 +1,13 @@
-var HDWalletProvider = require("truffle-hdwallet-provider");
-var infura_key = "B3hd1WhDtDSLkfVBMRtl";
-var mnemonic = "swallow cinnamon brother pyramid win panda pull appear spin federal wine door";
+var HDWalletProvider = require("truffle-hdwallet-provider")
+var infura_key = process.env.INFURA_KEY
+var mnemonic = process.env.MNEMONIC
 module.exports = {
   networks: {
+    development: {
+      host: "localhost",
+      port: 8545,
+      network_id: "*"
+    },
     ropsten: {
       provider: new HDWalletProvider(mnemonic, "https://ropsten.infura.io/" + infura_key),
       network_id: "*",
